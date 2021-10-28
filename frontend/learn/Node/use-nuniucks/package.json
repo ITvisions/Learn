@@ -1,0 +1,22 @@
+{
+    "name": "use-nuniucks",
+    "version": "1.0.0",
+    "description": "hello,nuniucks",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js"
+    },
+    "keywords": [
+        "koa",
+        "async"
+    ],
+    "author": "vision",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/ITvision/learn-node.get"
+    },
+    "dependencies": {
+        "nunjucks": "2.4.2"
+    }
+}
