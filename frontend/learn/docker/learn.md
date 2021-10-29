@@ -3,7 +3,8 @@
 通过dockerfile构建镜像是最常见的一种方式
 > 什么是dockerfile
 > 
-dockerfile是一个包含用于组合景象的命令的文本文档，可以在命令行调用任何命令。dockerfile通过读取dockerfile中的指令自动生成影像
+dockerfile是一个包含用于组合景象的命令的文本文档，可以在命令行调用任何命令。  
+dockerfile通过读取dockerfile中的指令自动生成影像
 总结为：
 * dockerfile是用于构建镜像的文件
 * dockerfile里包含了构建镜像所需的“指令”
@@ -44,9 +45,8 @@ docker image build -t <Name:tag> <file path>
 ```
 docker image build -t test .
 ```
-（注意命令最后是有一个`.`的），如果你是第一次执行打包，这个过程需要几分钟，当出现`FINISHED`后，说明打包完成了
-打包完成
-打包完成后，通过`docker image ls`命令查看现在拥有的镜像列表。如果一切正常，可以看到名字为test的镜像已经存在
+（注意命令最后是有一个`.`的），如果你是第一次执行打包，这个过程需要几分钟，当出现`FINISHED`后，说明打包完成了  
+打包完成后，通过`docker image ls`命令查看现在拥有的镜像列表。如果一切正常，可以看到名字为test的镜像已经存在  
 可以执行容器，验证自己diy的镜像是否可用
 ```
 docker run test
@@ -86,7 +86,7 @@ docker image push aitvision/test
 制作镜像时，经常需要向镜像里添加文件。在Dockerfile中有两个命令可以向镜像中添加文件`COPY`和`ADD`
 > 用COPY命令构建镜像
 > 
-`COPY`和`ADD`命令，在复制普通文件时，没有太大的不同，两个命令都可以吧本地文件，复制到镜像里（如果复制的路径不存在，则会自动创建）
+`COPY`和`ADD`命令，在复制普通文件时，没有太大的不同，两个命令都可以吧本地文件，复制到镜像里（如果复制的路径不存在，则会自动创建）  
 现在我们写一个Dockerfile,里面的内容时用基础镜像，然后拷贝一个`index.js` 文件进去
 Dockerfile.copy内容如下：
 ```
@@ -138,7 +138,7 @@ docker container run -it -p 3000:3000 hello-gzip sh
 再进入`app`路径下面，可以看到下面自动给我们解压了`index.tar`文件
 > 切换工作目录WORKDIR
 > 
-在写Dockerfile文件时，默认的操作目录，时镜像的根目录。但有时候需要拷贝很多内容到二级目录，就可以使用WORKDIR命令。把工作的目录切换到二级，`WORKDIR`命令像我们操作linux下的`cd`命令
+在写Dockerfile文件时，默认的操作目录，时镜像的根目录。但有时候需要拷贝很多内容到二级目录，就可以使用WORKDIR命令。把工作的目录切换到二级，`WORKDIR`命令像我们操作linux下的`cd`命令  
 比如刚刚的Dockerfile.add文件，我们可以使用`WORKDIR`命令，改成下面的形式
 ```
 FROM node:alpine3.14
@@ -160,7 +160,7 @@ RUN apt-get update && \
     mv ipinfo_2.0.1_linux_amd64 /usr/bin/ipinfo && \
     rm -rf ipinfo_2.0.1_linux_amd64.tar.gz
 ```
-这段文件里有ipinfo的版本是`ipinfo-2.0.1`，这个版本是可能改变的。文件里一共出现了5次`2.0.1`。修改起来是比较麻烦的，如果出现更多次，几乎变的不可维护。所以这时候就需要定义一个变量，方便日后的维护
+这段文件里有ipinfo的版本是`ipinfo-2.0.1`，这个版本是可能改变的。文件里一共出现了5次`2.0.1`。修改起来是比较麻烦的，如果出现更多次，几乎变的不可维护。所以这时候就需要定义一个变量，方便日后的维护  
 先用`ENV`的形式来修改变量，把上面的Dockerfile.good文件修改为下面的形式,并将其保存名为`Dockerfile.ENV`文件
 ```
 FROM ubuntu:latest
@@ -362,7 +362,7 @@ docker container run -d nginx
 建议在开发时，更多地使用Bind Mount实现数据持久化
 > Bind Mount命令的使用
 > 
-使用`Bind Mount`进行数据持久化的方法，和`Data Volume`类似，也需要在启动容器时用到`-v`参数，只是参数的编写结构不同
+使用`Bind Mount`进行数据持久化的方法，和`Data Volume`类似，也需要在启动容器时用到`-v`参数，只是参数的编写结构不同  
 比如在windows进入`PowerShell`，运行一个Node的容器，然后把`/app`作为目录，把本机的当前目录作为绑定目录，意思是容器中的app目录和本机的当前目录绑定到了一起
 ```
 docker container run -it -v ${pwd}:/app node
@@ -378,17 +378,179 @@ setInterval(() => {
   console.log(Date())
 }, 1000)
 ```
+写完之后，在`powershell`里是可以看到这个文件的。这样就算没有`Node`环境，可以在容器中进行使用
+进入容器的`/app`目录，运行`node index.js`命令，就可以显示时间了
+### 25. [网络]容器的端口转发
+如果你在外网的linux服务器上启动了一个wordpress的容器，然后想通过本季访问，这时候就需要使用端口映射了。如果不进行端口映射，容器相当于一个私域IP，外网是访问不到的，所以要使用端口转发的形式，才可以正常访问。
+> linux主机安装wordpress
+> 
+先安装和启动容器，并映射80端口
+```
+docker container run -d -p 80:80 wordpress
+```
+第一个`80`是要映射的端口号，后面的`80`是镜像提供的端口号
+> 如何查看容器提供的端口
+> 
+如果不知道容器提供的端口就需要使用下面的命令查看容器提供的端口
+```
+docker container inspect --format '{{.Config.ExposedPorts}}' <ContainerID>
+```
+`--format`是格式化过滤的意思，后面的`{{}...}`中是要查看的选项
+如果镜像提供了这样的端口配置就可以查看到了。如果不知道有什么具体项，可以使用以下命令查看所有详细信息
+```
+docker container inspect <Container ID>
+```
+### 26. [docker-compose]介绍和安装
+> 什么是Docker-compose
+> 
+熟悉linux应该知道我们可以把很多想的命令写成`xxx.sh`文件，而且这些步骤也是相对固定的  
+这样直接运行sh文件，就可以逐一执行很多相关的docker命令。这中形式可以减少出错和解决复用问题。docker也为我们准备了一个专门的工具`docker-compose`,实现类似`sh`文件的功能，让我们可以可以更加轻松的实现多docker命令的操作  
+你也可以把很多docker命令写入一个专属的文件`docker-compose.yml`,然后执行这个文件，就可以直接启动我们的容器。`docker-compose`也为我么提供了相应的操作命令
+```
+docker-compose up
+docker-compose stop
+```
+操作docker-compose会有两个大的部分需要操作
+* 第一部分是`docker-compose.yml`文件
+* 输入命令执行构建容器
+> docker-comopse的安装
+> 
+如果是windows或者mac安装docker桌面版本(desktip）以后，就默认安装了docker-compose工具了，可以直接使用  
+查看安装的版本，在powershell中输入以下命令
+```
+docker-compose --version
+```
+弱安装好了，就会显示对应的版本
+> Linux官方推荐安装方法
+> 
+Linux系统默认是没有安装`docker-compose`工具的，可以在[https://docs.docker.com/desktop/](https://docs.docker.com/desktop/)进行安装，选择`Product Manuals` -> `Docker compose` -> `Liunx`,可以看到三条命令，依次执行命令就可以安装  
+```
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose  
+sudo chmod +x /usr/local/bin/docker-compose  
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+```
+> linux用pip进行安装
+> 
+如果linux系统上没有安装pip工具，可以通过下面命令进行安装`pip`和`docker-conpose`
+1. 查看是否安装依赖包
+```
+sudo yum install epel-release
+```
+2. 更新文件库
+```
+sudo yum -y update
+```
+3. 安装pip
+```
+sudo yum -y install python-pip
+```
+4. 安装docker-compose
+```
+sudo pip install -U docker-compose
+```
+### 27. [docker-compose]文件的结构和版本
+> yaml文件的基础结构讲解
+> 
+`yaml`文件里是对启动镜像相关设置的所有描述
+基本的`yaml`格式`docker-compose.yml`
+```
+version: "3.8"
 
+services: # 容器
+  servicename: # 服务名字，这个名字也是内部 bridge网络可以使用的 DNS name
+    image: # 镜像的名字
+    command: # 可选，如果设置，则会覆盖默认镜像里的 CMD命令
+    environment: # 可选，相当于 docker run里的 --env
+    volumes: # 可选，相当于docker run里的 -v
+    networks: # 可选，相当于 docker run里的 --network
+    ports: # 可选，相当于 docker run里的 -p
+  servicename2:
 
+volumes: # 可选，相当于 docker volume create
 
+networks: # 可选，相当于 docker network create
+```
+以一个wordpress的镜像为例，制作`yaml`文件
+> wordpress的yaml写法
+> 
+用命令的写法
+```
+docker container run -d -p 80:80 wordpress
+```
+yaml文件的写法
+```
+version: "3.8"
+service: 
+  my-wordpress:
+    image: wordpress:latest
+    ports:
+     - 80:80
+```
+> docker-compose版本说明
+> 
 
+> docker-compose语法版本：https://docs.docker.com/compose/compose-file/(https://docs.docker.com/compose/compose-file/)
+>
+网页中可以看到`compose`和`docker`版本的兼容关系表
+可以使用以下命令查看当前电脑的版本
+```
+docker --version
+```
+### 28. [docker-compose]基础命令的使用
+> docker compose 的yaml文件
+> 
+上面的`yaml`文件
+```
+version: "3.8"
 
+services:
+  my-wordpress:
+    image: wordpress:latest
+    ports:
+      - 80:80
+```
+有了这个文件后，打开`vscode`，然后在终端中输入`docker compose`命令
+> 开启容器的命令
+> 
+要学的第一个命令是用来开启容器的`docker compose up`，当然`docker compose`有很多命令,输入`docker compose`然后回车就可以看到相关的命令  
+在终端中输入以下命令，就可以开启`compose`容器了
+```
+docker compose up
+```
+但这时候的容器开启方式是又日志输出的，并且窗口被占用了。没办法进行其他操作，加入`-d`参数启动后台运行模式，就可以继续操作终端了
+```
+docker compose up -d
+```
+如果想要看`service`运行情况，可以使用以下命令
+```
+docker-compose ps
+```
+> docker compose的停止和清理
+> 
+当你不再使用这个`service`时，可以使用`stop`命令停止
+```
+docker compose stop
+```
+停止后，容器处于`Exited`模式。容器停止后，就可以进行清理了
+```
+docker compose rm
+```
+命令会删除由`docker compose`所建立的容器，但是docker命令创建的容器不回被删除，对应的网络也不会被删除
+> 命名规则
+> 
+用`docker compose`创建的容器，名字都会加入一个对应文件，例如现在的文件夹为`test`，在`yaml`文件中的名字为`my-wordpress`,那么最终的容器名字就是`test_my-wordpress_1`
+这个前缀可以更改，例如前缀加上`hello`，可以使用`-p`参数
+```
+docker-compose -p hello up -d
+```
+也可以在`yaml`文件中指定这个名字，方法是使用`container_name:xxx`但是这样就会完全省略前缀和后缀
+```
+version: "3.8"
 
-
-
-
-
-
-
-
-
+services:
+  my-wordpress:
+        container_name: hello
+    image: wordpress:latest
+    ports:
+      - 80:80
+```
