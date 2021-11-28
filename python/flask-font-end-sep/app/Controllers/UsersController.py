@@ -83,7 +83,7 @@ def getInfo():
   '''不通过鉴权获取用户信息'''
   id = request.json.get('id')
   data = Users.query.filter_by(id = id).all()
-  datas = Utils.db_1_to_d(data)
+  datas = Utils.db_l_to_d(data)
   return BaseController().successData(datas)
 
 @app.route('/api/v2/user/suggest', methods = ['GET'])
