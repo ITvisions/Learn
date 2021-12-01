@@ -1,6 +1,8 @@
 import os
 from flask import Flask
 
+from applications.configs import config
+
 def create_app(config_name = None):
   app = Flask(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -9,7 +11,7 @@ def create_app(config_name = None):
     config_name = os.getenv('FLASK_CONFIG', 'development')
   
   # 引入数据库配置
-  # app.config.from_object(config(config_name))
+  app.config.from_object(config[config_name])
 
   # 注册插件
   # init_plugs(app)
