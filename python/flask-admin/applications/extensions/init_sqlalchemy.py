@@ -5,8 +5,8 @@ from flask_sqlalchemy import SQLAlchemy, BaseQuery
 from flask_marshmallow import Marshmallow
 from marshmallow import fields
 from marshmallow.validate import (
-  URL, Email, Range, Length, Equal, Regexp,
-  Predicate, Noneof, OneOf, ContainsOnly
+    URL, Email, Range, Length, Equal, Regexp,
+    Predicate, NoneOf, OneOf, ContainsOnly
 )
 
 URL.default_message = '无效的链接'
@@ -21,7 +21,7 @@ Length.message_equal = '长度必须等于{equal}位'
 Equal.default_message = '必须等于{other}'
 Regexp.default_message = '非法输入'
 Predicate.default_message = '非法输入'
-Noneof.default_message = '非法输入'
+NoneOf.default_message = '非法输入'
 OneOf.default_message = '无效的选择'
 ContainsOnly.default_message = '一个或多个无效的选择'
 
