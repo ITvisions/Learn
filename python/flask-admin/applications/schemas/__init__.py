@@ -1,0 +1,1 @@
+from .admin_photo import PhotoOutSchema
