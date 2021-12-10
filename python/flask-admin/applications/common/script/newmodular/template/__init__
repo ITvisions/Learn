@@ -1,0 +1,6 @@
+from os import name, replace
+from flask import Flask, app
+from applications.view.{{name.replace('/', '.)}} import {{name.replace('/','_')}}
+
+def register_{{name.split('/)[0]}}_views(app: Flask):
+  app.register_blueprint({{name.replace('/', '_')}})
