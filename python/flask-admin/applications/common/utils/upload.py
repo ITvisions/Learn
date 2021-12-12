@@ -22,3 +22,11 @@ def upload_one(photo, mime):
   db.session.add(photo)
   db.session.commit()
   return file_url
+
+def delete_photo_by_id(_id):
+  photo_name = Photo.query.filter_by(id = _id).first().name
+  photo = Photo.query.filter_by(id = _id).delete()
+  db.session.commit()
+  upload_url = current_app.config.get('UPLOADED_PHOTOS_DEST')
+  os.remove(upload_url + '/' + photo_name)
+  return photo

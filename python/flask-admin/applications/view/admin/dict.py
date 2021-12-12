@@ -1,5 +1,6 @@
 import re
 from flask import Blueprint, render_template, request, jsonify
+from flask_sqlalchemy import model
 from sqlalchemy import schema
 from sqlalchemy.sql.elements import TypeClause
 
@@ -153,3 +154,33 @@ def dict_data_update():
   })
   db.session()
   return success_api(msg = '更新成功')
+
+@admin_dict.put('/dictData/enable')
+@authorize('admin:dict:edit', log = True)
+def dict_data_enable():
+  _id = request.json.get('dataId')
+  if _id:
+    res = curd.enable_status(model = DictData, id = _id)
+    if not res:
+      return fail_api(msg = '出错了')
+    return success_api(msg = '启动成功')
+  return fail_api(msg = '数据错误')
+
+@admin_dict.put('/dictData/disable')
+@authorize('admin:dict:edit', log = True)
+def dict_data_disable():
+  _id = request.json.get('dataId')
+  if _id:
+    res = curd.enable_status(model = DictData, id = _id)
+    if not res:
+      return fail_api(msg = '出错了')
+    return success_api(msg = '禁用成功')
+  return fail_api(msg = '数据错误')
+
+@admin_dict.delete('dicrData/remove/<int:id>')
+@authorize("admin:dict:remove", log = True)
+def dict_data_delete(id):
+  res = curd.delete_one_by_id(model = DictData, id = id)
+  if not res:
+    return fail_api(msg = '删除失败')
+  return success_api(msg = '删除成功')
