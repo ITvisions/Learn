@@ -1,3 +1,4 @@
+from .admin_dept import Dept
 from .admin_user import User
 from .admin_dict import DictType, DictData
 from .admin_log import AdminLog
